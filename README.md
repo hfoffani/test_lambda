@@ -1,4 +1,4 @@
 BOTO3PROF=hmf python prog.py 
 
-sh upload.sh
+BOTO3PROF=hmf sh upload.sh
 
