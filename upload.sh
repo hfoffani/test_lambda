@@ -5,7 +5,7 @@ upload_func () {
     local FUNC=$1
 	AWS_PAGER="" aws --profile $BOTO3PROF --output yaml \
         lambda update-function-code  \
-        -function-name $FUNC --zip-file fileb://$FUNC.zip
+        --function-name $FUNC --zip-file fileb://$FUNC.zip
 }
 
 zip_func () {
