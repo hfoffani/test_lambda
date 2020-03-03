@@ -33,25 +33,24 @@ cl_handler = watchtower.CloudWatchLogHandler(
 logger.addHandler(cl_handler)
 
 
-def read_ftp(ftpparams):
-    with FTP_TLS(ftpparams['host']) as ftps:
-        ftps.login(ftpparams['user'], ftpparams['password'])
+def read_ftp():
+    with FTP_TLS(os.environ['host']) as ftps:
+        ftps.login(os.environ['user'], os.environ['password'])
         ftps.prot_p()
 
-        ftps.cwd(ftpparams['dir'])
-        filename = ftpparams['finput']
+        ftps.cwd(os.environ['dir'])
+        filename = os.environ['finput']
 
         with BytesIO() as inpbin:
             ftps.retrbinary('RETR %s' % filename, inpbin.write)
             return inpbin.getvalue().decode('utf-8-sig')
 
 
-def process(params):
-    country = params['country']
+def process(country):
     logger.warn(f"Hello from {country}")
 
     # read from FTP
-    txt = read_ftp(params)
+    txt = read_ftp()
     logger.warn(f"Got {len(txt)} chars.")
 
     # write to S3
@@ -59,7 +58,7 @@ def process(params):
 
     s3 = session.client('s3')
     with BytesIO(loremipsum.encode()) as bio:
-        s3.upload_fileobj( bio, params["bucket"], filename )
+        s3.upload_fileobj( bio, os.environ["bucket"], filename )
     logger.warn(f"Wrote to S3.")
 
     cl_handler.flush()
@@ -68,7 +67,7 @@ def process(params):
 
 def lambda_handler(event, context):
 
-    res = process(event)
+    res = process(event['country'])
 
     return {
         'statusCode': 200,

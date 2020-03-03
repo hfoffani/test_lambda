@@ -9,4 +9,7 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read(['config.cfg'])
 
-    process(config['DEFAULT'])
+    for k in config['DEFAULT']:
+        os.environ[k] = config['DEFAULT'][k]
+
+    process('aus')
